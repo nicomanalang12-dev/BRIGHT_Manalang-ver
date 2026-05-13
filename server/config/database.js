@@ -6,51 +6,19 @@ const fs = require('fs');
 function runMigrations(db) {
   try {
     db.exec('ALTER TABLE Users ADD COLUMN two_fa_code TEXT');
-    console.log('✅ Migration: Added two_fa_code column to Users.');
-  } catch (err) {
-    if (!err.message.includes('duplicate column name')) {
-      console.error('Migration Error (two_fa_code):', err.message);
-    }
-  }
+  } catch (err) {}
   try {
     db.exec('ALTER TABLE Users ADD COLUMN two_fa_expires DATETIME');
-    console.log('✅ Migration: Added two_fa_expires column to Users.');
-  } catch (err) {
-    if (!err.message.includes('duplicate column name')) {
-      console.error('Migration Error (two_fa_expires):', err.message);
-    }
-  }
+  } catch (err) {}
+  try {
+    db.exec('ALTER TABLE Users ADD COLUMN reset_token TEXT');
+  } catch (err) {}
+  try {
+    db.exec('ALTER TABLE Users ADD COLUMN reset_token_expires DATETIME');
+  } catch (err) {}
 }
 
-const CODE_DB_PATH = path.resolve(__dirname, '..', 'data', 'BRIGHTDatabase.db');
-const VOLUME_FOLDER = '/app/data';
-const VOLUME_DB_PATH = path.join(VOLUME_FOLDER, 'BRIGHTDatabase.db');
-
-let dbPath;
-
-console.log('--- DATABASE SETUP STARTED ---');
-
-if (fs.existsSync(VOLUME_FOLDER)) {
-  console.log('✅ Volume folder found. Running in Production/Railway.');
-  if (!fs.existsSync(VOLUME_DB_PATH)) {
-    console.log('⚠️ Database NOT found in Volume. Seeding from code...');
-    if (fs.existsSync(CODE_DB_PATH)) {
-      try {
-        fs.copyFileSync(CODE_DB_PATH, VOLUME_DB_PATH);
-        console.log('✅ SUCCESS: Copied initial database to Volume.');
-      } catch (err) {
-        console.error('❌ ERROR: Failed to copy database file:', err);
-      }
-    }
-  } else {
-    console.log('✅ Existing database found in Volume. Using it.');
-  }
-  dbPath = VOLUME_DB_PATH;
-} else {
-  console.log('ℹ️ Volume folder NOT found. Using local file.');
-  dbPath = CODE_DB_PATH;
-}
-
+const dbPath = path.resolve(__dirname, '..', 'data', 'BRIGHTDatabase.db');
 console.log('Final Database Path:', dbPath);
 
 const db = new Database(dbPath);
@@ -65,5 +33,4 @@ if (fs.existsSync(schemaPath)) {
 }
 
 runMigrations(db);
-
 module.exports = db;
