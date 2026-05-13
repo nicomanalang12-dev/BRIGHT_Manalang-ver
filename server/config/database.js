@@ -1,21 +1,19 @@
-
-// config/database.js
+﻿// config/database.js
 const Database = require('better-sqlite3');
 const path = require('path');
 const fs = require('fs');
 
 function runMigrations(db) {
   try {
-    db.exec(`ALTER TABLE Users ADD COLUMN two_fa_code TEXT`);
+    db.exec('ALTER TABLE Users ADD COLUMN two_fa_code TEXT');
     console.log('✅ Migration: Added two_fa_code column to Users.');
   } catch (err) {
     if (!err.message.includes('duplicate column name')) {
       console.error('Migration Error (two_fa_code):', err.message);
     }
   }
-
   try {
-    db.exec(`ALTER TABLE Users ADD COLUMN two_fa_expires DATETIME`);
+    db.exec('ALTER TABLE Users ADD COLUMN two_fa_expires DATETIME');
     console.log('✅ Migration: Added two_fa_expires column to Users.');
   } catch (err) {
     if (!err.message.includes('duplicate column name')) {
@@ -58,14 +56,14 @@ console.log('Final Database Path:', dbPath);
 const db = new Database(dbPath);
 db.pragma('foreign_keys = ON');
 console.log('✅ Connected to SQLite database.');
-const fs = require('fs');
-const path = require('path');
+
 const schemaPath = path.join(__dirname, '../data/schema.sql');
 if (fs.existsSync(schemaPath)) {
   const schema = fs.readFileSync(schemaPath, 'utf8');
   db.exec(schema);
   console.log('✅ Schema applied.');
 }
+
 runMigrations(db);
 
 module.exports = db;
