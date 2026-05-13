@@ -11,8 +11,8 @@ const TransactionLedger = () => {
   const [isTypeOpen, setIsTypeOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
-  const BACKEND_URL = 'https://brightmanalang-ver-production.up.railway.app';
-  const API_BASE_URL = '/api/transactions';
+  const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const API_BASE_URL = ${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/transactions';
 
     useEffect(() => {
     const fetchTransactions = async () => {
@@ -172,3 +172,5 @@ const TransactionLedger = () => {
 };
 
 export default TransactionLedger;
+
+

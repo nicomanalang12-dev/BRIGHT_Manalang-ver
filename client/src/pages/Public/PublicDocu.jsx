@@ -3,8 +3,8 @@ import '../../index.css';
 
 const PublicDocu = () => {
   // 1. Point to your Backend Port
-  const BACKEND_URL = 'https://brightmanalang-ver-production.up.railway.app';
-  const API_BASE_URL = '/api/public/documents'; // Match your documents.js route
+  const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const API_BASE_URL = ${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/public/documents'; // Match your documents.js route
   
   const [documents, setDocuments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -166,3 +166,5 @@ const PublicDocu = () => {
 };
 
 export default PublicDocu;
+
+

@@ -5,8 +5,8 @@ const UserMngmnt = () => {
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const BACKEND_URL = 'https://brightmanalang-ver-production.up.railway.app';
-    const API_BASE_URL = '/api/users';
+    const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const API_BASE_URL = ${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users';
 
     useEffect(() => {
         const link = document.createElement('link');
@@ -191,3 +191,5 @@ const UserMngmnt = () => {
 };
 
 export default UserMngmnt;
+
+
