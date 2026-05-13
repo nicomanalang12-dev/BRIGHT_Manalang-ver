@@ -1,178 +1,99 @@
-// models/User.js
-
-// Make sure this path is correct
-const db = require('../config/database'); 
+﻿// models/User.js
+const db = require('../config/database');
 
 const User = {
-  // --- USER LOOKUP FUNCTIONS ---
   findByUsername: (username, callback) => {
-    // --- BINAGO --- Dinagdagan ng "AND status = 'approved'"
-    const sql = "SELECT * FROM Users WHERE username = ? AND status = 'approved'";
-    db.get(sql, [username], (err, user) => {
-        if (err) {
-            console.error("SQL Error in User.findByUsername:", err.message);
-        }
-        callback(err, user);
-    });
+    try {
+      const user = db.prepare("SELECT * FROM Users WHERE username = ? AND status = 'approved'").get(username);
+      callback(null, user);
+    } catch (err) { callback(err); }
   },
-
   findByEmail: (email, callback) => {
-    const sql = 'SELECT * FROM Users WHERE email = ?';
-    db.get(sql, [email], (err, user) => {
-      if (err) {
-        console.error("SQL Error in User.findByEmail:", err.message);
-      }
-      callback(err, user);
-    });
+    try {
+      const user = db.prepare('SELECT * FROM Users WHERE email = ?').get(email);
+      callback(null, user);
+    } catch (err) { callback(err); }
   },
-
-  // --- USER CREATION ---
   create: (username, full_name, passwordHash, email, role, position, callback) => {
-    const now = new Date();
-
-    const timestamp = now.getFullYear() + '-' +
-                    ('0' + (now.getMonth() + 1)).slice(-2) + '-' +
-                    ('0' + now.getDate()).slice(-2) + ' ' +
-                    ('0' + now.getHours()).slice(-2) + ':' +
-                    ('0' + now.getMinutes()).slice(-2) + ':' +
-                    ('0' + now.getSeconds()).slice(-2);
-
-    const sql = `
-      INSERT INTO Users (username, full_name, password_hash, role, email, position, created_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-    
-    db.run(sql, [username, full_name, passwordHash, role, email, position, timestamp], function(err) {
-      if (err) {
-        console.error("SQL Error in User.create:", err.message);
-      }
-      callback(err, { id: this.lastID }); 
-    });
+    try {
+      const now = new Date();
+      const timestamp = now.getFullYear() + '-' + ('0'+(now.getMonth()+1)).slice(-2) + '-' + ('0'+now.getDate()).slice(-2) + ' ' + ('0'+now.getHours()).slice(-2) + ':' + ('0'+now.getMinutes()).slice(-2) + ':' + ('0'+now.getSeconds()).slice(-2);
+      const result = db.prepare('INSERT INTO Users (username, full_name, password_hash, role, email, position, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)').run(username, full_name, passwordHash, role, email, position, timestamp);
+      callback(null, { id: result.lastInsertRowid });
+    } catch (err) { callback(err); }
   },
-
-  // --- USER GET ALL ---
   getAll: (callback) => {
-    db.all("SELECT user_id, full_name, role FROM Users ORDER BY full_name", [], (err, rows) => {
-         if (err) {
-            console.error("SQL Error in User.getAll:", err.message);
-        }
-        callback(err, rows);
-    });
+    try {
+      const rows = db.prepare('SELECT user_id, full_name, role FROM Users ORDER BY full_name').all();
+      callback(null, rows);
+    } catch (err) { callback(err); }
   },
-
-  // --- MGA BAGONG FUNCTIONS PARA SA USER MANAGEMENT ---
-
-  // Para kunin lahat ng user para sa table
   getAllRequests: (callback) => {
-    const sql = `
-      SELECT user_id, full_name, position, role, email, created_at AS requested_date, status
-      FROM Users
-      ORDER BY CASE status WHEN 'pending' THEN 1 WHEN 'approved' THEN 2 WHEN 'rejected' THEN 3 END, created_at DESC`;
-    db.all(sql, [], callback);
+    try {
+      const rows = db.prepare("SELECT user_id, full_name, position, role, email, created_at AS requested_date, status FROM Users ORDER BY CASE status WHEN 'pending' THEN 1 WHEN 'approved' THEN 2 WHEN 'rejected' THEN 3 END, created_at DESC").all();
+      callback(null, rows);
+    } catch (err) { callback(err); }
   },
-
-  // Para i-update ang status (approve/reject)
   updateStatus: (userId, newStatus, callback) => {
-    const sql = `UPDATE Users SET status = ? WHERE user_id = ?`;
-    db.run(sql, [newStatus, userId], function(err) {
-      callback(err, { changes: this.changes });
-    });
+    try {
+      const result = db.prepare('UPDATE Users SET status = ? WHERE user_id = ?').run(newStatus, userId);
+      callback(null, { changes: result.changes });
+    } catch (err) { callback(err); }
   },
-
-  // Para sa summary cards (pending, approved, rejected counts)
   getStatusSummary: (callback) => {
-    const sql = `
-      SELECT
-        COUNT(CASE WHEN status = 'pending' THEN 1 END) AS pending,
-        COUNT(CASE WHEN status = 'approved' THEN 1 END) AS approved,
-        COUNT(CASE WHEN status = 'rejected' THEN 1 END) AS rejected
-      FROM Users`;
-    db.get(sql, [], callback);
+    try {
+      const row = db.prepare("SELECT COUNT(CASE WHEN status = 'pending' THEN 1 END) AS pending, COUNT(CASE WHEN status = 'approved' THEN 1 END) AS approved, COUNT(CASE WHEN status = 'rejected' THEN 1 END) AS rejected FROM Users").get();
+      callback(null, row);
+    } catch (err) { callback(err); }
   },
-
-  // --- PASSWORD RESET FUNCTIONS ---
-
   saveResetToken: (userId, token, expires, callback) => {
-    const sql = 'UPDATE Users SET reset_token = ?, reset_token_expires = ? WHERE user_id = ?';
-    db.run(sql, [token, expires, userId], function(err) {
-      if (err) {
-        console.error("SQL Error in User.saveResetToken:", err.message);
-      }
-      callback(err, this.changes);
-    });
+    try {
+      const result = db.prepare('UPDATE Users SET reset_token = ?, reset_token_expires = ? WHERE user_id = ?').run(token, expires, userId);
+      callback(null, result.changes);
+    } catch (err) { callback(err); }
   },
-
   findByResetToken: (token, callback) => {
-    const sql = "SELECT * FROM Users WHERE reset_token = ? AND reset_token_expires > datetime('now')";
-    db.get(sql, [token], (err, user) => {
-      if (err) {
-        console.error("SQL Error in User.findByResetToken:", err.message);
-      }
-      callback(err, user);
-    });
+    try {
+      const user = db.prepare("SELECT * FROM Users WHERE reset_token = ? AND reset_token_expires > datetime('now')").get(token);
+      callback(null, user);
+    } catch (err) { callback(err); }
   },
-
   updatePassword: (userId, hashedPassword, callback) => {
-    const sql = 'UPDATE Users SET password_hash = ?, reset_token = NULL, reset_token_expires = NULL WHERE user_id = ?';
-    db.run(sql, [hashedPassword, userId], function(err) {
-      if (err) {
-        console.error("SQL Error in User.updatePassword:", err.message);
-      }
-      callback(err, this.changes);
-    });
+    try {
+      const result = db.prepare('UPDATE Users SET password_hash = ?, reset_token = NULL, reset_token_expires = NULL WHERE user_id = ?').run(hashedPassword, userId);
+      callback(null, result.changes);
+    } catch (err) { callback(err); }
   },
   updateAccountDetails: (userId, data, callback) => {
-    const { username, full_name, email, position } = data;
-    const sql = `
-      UPDATE Users 
-      SET username = ?, full_name = ?, email = ?, position = ? 
-      WHERE user_id = ?
-    `;
-    db.run(sql, [username, full_name, email, position, userId], function(err) {
-      if (err) console.error("SQL Error in User.updateAccountDetails:", err.message);
-      callback(err, { changes: this.changes });
-    });
+    try {
+      const { username, full_name, email, position } = data;
+      const result = db.prepare('UPDATE Users SET username = ?, full_name = ?, email = ?, position = ? WHERE user_id = ?').run(username, full_name, email, position, userId);
+      callback(null, { changes: result.changes });
+    } catch (err) { callback(err); }
   },
-
-  // Updates the password hash
   changePassword: (userId, newPasswordHash, callback) => {
-    const sql = `UPDATE Users SET password_hash = ? WHERE user_id = ?`;
-    db.run(sql, [newPasswordHash, userId], function(err) {
-      if (err) console.error("SQL Error in User.changePassword:", err.message);
-      callback(err, { changes: this.changes });
-    });
+    try {
+      const result = db.prepare('UPDATE Users SET password_hash = ? WHERE user_id = ?').run(newPasswordHash, userId);
+      callback(null, { changes: result.changes });
+    } catch (err) { callback(err); }
   },
-
-  // --- NEW 2FA FUNCTIONS ---
   saveTwoFACode: (userId, hashedCode, expires, callback) => {
-    const sql = 'UPDATE Users SET two_fa_code = ?, two_fa_expires = ? WHERE user_id = ?';
-    db.run(sql, [hashedCode, expires, userId], function(err) {
-      if (err) {
-        console.error("SQL Error in User.saveTwoFACode:", err.message);
-      }
-      callback(err, this.changes);
-    });
+    try {
+      const result = db.prepare('UPDATE Users SET two_fa_code = ?, two_fa_expires = ? WHERE user_id = ?').run(hashedCode, expires, userId);
+      callback(null, result.changes);
+    } catch (err) { callback(err); }
   },
-  
   findByTwoFACode: (userId, hashedCode, callback) => {
-    // Finds user only if code matches AND is not expired
-    const sql = "SELECT * FROM Users WHERE user_id = ? AND two_fa_code = ? AND two_fa_expires > datetime('now')";
-    db.get(sql, [userId, hashedCode], (err, user) => {
-      if (err) {
-        console.error("SQL Error in User.findByTwoFACode:", err.message);
-      }
-      callback(err, user);
-    });
+    try {
+      const user = db.prepare("SELECT * FROM Users WHERE user_id = ? AND two_fa_code = ? AND two_fa_expires > datetime('now')").get(userId, hashedCode);
+      callback(null, user);
+    } catch (err) { callback(err); }
   },
-
   clearTwoFACode: (userId, callback) => {
-    const sql = 'UPDATE Users SET two_fa_code = NULL, two_fa_expires = NULL WHERE user_id = ?';
-    db.run(sql, [userId], function(err) {
-        if (err) {
-            console.error("SQL Error in User.clearTwoFACode:", err.message);
-        }
-        callback(err, this.changes);
-    });
+    try {
+      const result = db.prepare('UPDATE Users SET two_fa_code = NULL, two_fa_expires = NULL WHERE user_id = ?').run(userId);
+      callback(null, result.changes);
+    } catch (err) { callback(err); }
   }
 };
 module.exports = User;
