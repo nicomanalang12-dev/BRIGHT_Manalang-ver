@@ -301,7 +301,7 @@ try {
        if (err) console.log("ℹ️ reset_token_expires column already exists.");
        else console.log("✅ Added reset_token_expires column successfully!");
    });
-});
+
 
 
 // --- EXECUTE RESCUE OPERATION ---
