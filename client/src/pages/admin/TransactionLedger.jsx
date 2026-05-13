@@ -11,7 +11,7 @@ const TransactionLedger = () => {
   const [isTypeOpen, setIsTypeOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
-  const BACKEND_URL = 'http://localhost:3000';
+  const BACKEND_URL = 'https://brightmanalang-ver-production.up.railway.app';
   const API_BASE_URL = '/api/transactions';
 
     useEffect(() => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const DocumentMngmt = () => {
   // 1. Point this to your Backend Port
-  const BACKEND_URL = 'http://localhost:3000';
+  const BACKEND_URL = 'https://brightmanalang-ver-production.up.railway.app';
   const API_BASE_URL = '/api';
   
   const [allDocuments, setAllDocuments] = useState([]);
@@ -60,7 +60,7 @@ const DocumentMngmt = () => {
   // FIXED ACTION HANDLER
   // ==========================================
   const handleAction = (action, doc) => {
-    const BACKEND_URL = 'http://localhost:3000';
+    const BACKEND_URL = 'https://brightmanalang-ver-production.up.railway.app';
     
     if (action === 'view') {
       // Keep "View" pointing to the static folder to open in a new tab

@@ -77,7 +77,7 @@ const ValidatorLayout = () => {
    try {
      // 🟢 PINALITAN NA NATIN NG LIVE RAILWAY URL
      //const res = await fetch('https://amusing-comfort-production.up.railway.app/api/users/account/password', {
-     const res = await fetch('http://localhost:3000/api/users/account/password', {
+     const res = await fetch('https://brightmanalang-ver-production.up.railway.app/api/users/account/password', {
        method: 'PUT',
        headers: { 'Content-Type': 'application/json' },
        body: JSON.stringify({

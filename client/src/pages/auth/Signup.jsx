@@ -31,7 +31,7 @@ const Signup = () => {
 
     try {
       // 1. Send the actual request to the backend
-      const response = await fetch('http://localhost:3000/api/users/signup', {
+      const response = await fetch('https://brightmanalang-ver-production.up.railway.app/api/users/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
