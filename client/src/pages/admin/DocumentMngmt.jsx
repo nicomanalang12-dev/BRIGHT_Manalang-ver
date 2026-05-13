@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 const DocumentMngmt = () => {
   // 1. Point this to your Backend Port
   const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  const API_BASE_URL = ${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api';
+  const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api`;
   
   const [allDocuments, setAllDocuments] = useState([]);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
@@ -199,5 +199,7 @@ const DocumentMngmt = () => {
 };
 
 export default DocumentMngmt;
+
+
 
 

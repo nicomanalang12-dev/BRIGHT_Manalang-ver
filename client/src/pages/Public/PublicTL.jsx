@@ -11,7 +11,7 @@ const PublicTL = () => {
   const [isTypeOpen, setIsTypeOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
-  const API_BASE_URL = ${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/public'; 
+  const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/public'; 
 
   // 1. Fetch Data on Mount
   useEffect(() => {
@@ -254,5 +254,7 @@ const PublicTL = () => {
 };
 
 export default PublicTL;
+
+
 
 

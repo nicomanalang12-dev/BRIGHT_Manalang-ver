@@ -21,7 +21,7 @@ ChartJS.register(
 );
 
 const PublicOverview = () => {
-  const API_BASE_URL = ${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/public'; 
+  const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/public'; 
 
   // State for data
   const [summary, setSummary] = useState({
@@ -204,5 +204,7 @@ const PublicOverview = () => {
 };
 
 export default PublicOverview;
+
+
 
 
