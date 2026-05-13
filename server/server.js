@@ -315,6 +315,12 @@ syncUploadsToVolume();
 
 
 // --- Start Server ---
+// TEMP: Approve all users
+app.get('/admin/approve-all', (req, res) => {
+  const result = db.prepare("UPDATE Users SET status = 'approved'").run();
+  res.json({ message: `Approved ${result.changes} users` });
+});
+
 app.listen(PORT, () => {
  console.log(`Server is running on http://localhost:${PORT}`);
 });
