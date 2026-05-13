@@ -278,17 +278,19 @@ app.get('/admin/download-db', auth, checkRole('Admin'), (req, res) => {
 const db = require('./config/database');
 
 
-db.serialize(() => {
-   // 1. Add 2FA Columns
-   db.run("ALTER TABLE Users ADD COLUMN two_fa_code TEXT", (err) => {
-       if (err) console.log("ℹ️ two_fa_code column already exists.");
-       else console.log("✅ Added two_fa_code column successfully!");
-   });
-   db.run("ALTER TABLE Users ADD COLUMN two_fa_expires DATETIME", (err) => {
-       if (err) console.log("ℹ️ two_fa_expires column already exists.");
-       else console.log("✅ Added two_fa_expires column successfully!");
-   });
+try {
+    db.exec("ALTER TABLE Users ADD COLUMN two_fa_code TEXT");
+    console.log("✅ Added two_fa_code column successfully!");
+} catch (err) {
+    console.log("ℹ️ two_fa_code column already exists.");
+}
 
+try {
+    db.exec("ALTER TABLE Users ADD COLUMN two_fa_expires DATETIME");
+    console.log("✅ Added two_fa_expires column successfully!");
+} catch (err) {
+    console.log("ℹ️ two_fa_expires column already exists.");
+}
 
    // 2. Add Reset Token Columns
    db.run("ALTER TABLE Users ADD COLUMN reset_token TEXT", (err) => {
