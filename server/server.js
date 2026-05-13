@@ -293,14 +293,20 @@ try {
 }
 
    // 2. Add Reset Token Columns
-   db.run("ALTER TABLE Users ADD COLUMN reset_token TEXT", (err) => {
-       if (err) console.log("ℹ️ reset_token column already exists.");
-       else console.log("✅ Added reset_token column successfully!");
-   });
-   db.run("ALTER TABLE Users ADD COLUMN reset_token_expires DATETIME", (err) => {
-       if (err) console.log("ℹ️ reset_token_expires column already exists.");
-       else console.log("✅ Added reset_token_expires column successfully!");
-   });
+   // 2. Add Reset Token Columns
+try {
+    db.exec("ALTER TABLE Users ADD COLUMN reset_token TEXT");
+    console.log("✅ Added reset_token column successfully!");
+} catch (err) {
+    console.log("ℹ️ reset_token column already exists.");
+}
+
+try {
+    db.exec("ALTER TABLE Users ADD COLUMN reset_token_expires DATETIME");
+    console.log("✅ Added reset_token_expires column successfully!");
+} catch (err) {
+    console.log("ℹ️ reset_token_expires column already exists.");
+}
 
 
 
