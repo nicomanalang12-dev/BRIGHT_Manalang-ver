@@ -135,8 +135,8 @@ app.get('/favicon.ico', (req, res) => res.status(204).end());
 // --- Middleware ---
 // REPLACE the old app.use(cors()) with this:
 const corsOptions = {
-   origin: 'http://localhost:5173', // Your React Dev Port
-   credentials: true,               // REQUIRED: Allows cookies to be sent back and forth
+   origin: ['http://localhost:5173', 'https://lavish-victory-production.up.railway.app'],
+   credentials: true,
 };
 app.use(cors(corsOptions));
 
