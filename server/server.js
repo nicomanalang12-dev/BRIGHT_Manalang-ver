@@ -158,6 +158,8 @@ console.log("EMAIL_PASS exists:", process.env.EMAIL_PASS ? "✅ YES" : "❌ NO")
 
 const transporter = nodemailer.createTransport({
    service: 'gmail',
+   port: 587,
+   secure: false,
    host: 'smtp.gmail.com', // Explicitly setting the host can help
    port: 587,
    secure: false,
